@@ -1,0 +1,33 @@
+---
+version: '3.8'
+services:
+  mysql:
+    # image: docker.io/mysql:8.0.30
+    image: docker.io/mysql:5.7.32
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=mysql.123
+    network_mode: host
+    # ports:
+    #   - 3306:3306
+    volumes:
+      - ./conf.d:/etc/mysql/conf.d/:ro
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/binlog:/mysql/binlog
+      - ./mysql/slowlog:/mysql/slowlog
+      - ./mysql/run:/var/run/mysqld
+      - /etc/localtime:/etc/localtime:ro
+...
+
+# docker 命令
+#  docker run -d \
+#  --name mysql57 \
+#  --env MYSQL_ROOT_PASSWORD=mysql.123 \
+#  -p 3307:3307/tcp \
+#  --restart=always \
+#  -v $(pwd)/mysql/data:/var/lib/mysql:rw \
+#  -v $(pwd)/mysql/binlog:/mysql/binlog:rw \
+#  -v $(pwd)/mysql/slowlog:/mysql/slowlog:rw \
+#  -v $(pwd)/mysql/run:/var/run/mysqld:rw \
+#  -v $(pwd)/conf.d:/etc/mysql/conf.d:ro \
+#  docker.io/mysql:5.7.32

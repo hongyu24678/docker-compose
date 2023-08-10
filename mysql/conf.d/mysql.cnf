@@ -1,0 +1,93 @@
+[mysqld]
+#base config
+user = mysql
+autocommit = 1
+server_id = 1
+character_set_server = utf8mb4
+collation-server = utf8mb4_general_ci
+# basedir = /usr/local/mysql/mysql_${port}/
+# datadir = /data/mysql_${port}
+port = 3306
+# socket = /data/mysql_${port}/mysql_${port}.sock
+# pid-file = /data/mysql_${port}/mysql_${port}.pid
+# transaction_isolation = READ-COMMITTED
+explicit_defaults_for_timestamp = 1
+log_error_verbosity = 1
+skip_name_resolve = 1
+
+#connection config
+interactive_timeout = 1800
+wait_timeout = 1800
+lock_wait_timeout = 1800
+max_connections = 1000
+max_connect_errors = 10000
+
+#session memory config
+read_buffer_size = 131072
+read_rnd_buffer_size = 2097152
+sort_buffer_size = 1048576
+tmp_table_size = 16777216
+join_buffer_size = 1048576
+thread_cache_size = 64
+
+#log config
+log_error = error.log
+log_bin = /mysql/binlog/mysql-bin
+binlog_format = ROW
+expire_logs_days = 15
+max_binlog_size = 500M
+slow_query_log = 1
+slow_query_log_file = /mysql/slowlog/slow.log
+log_slow_admin_statements = 1
+log_slow_slave_statements = 1
+long_query_time = 1
+general_log_file = general.log
+sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'
+innodb_log_file_size = 1g  ## innodb 事务记录日志每个日志文件的最大大小
+innodb_log_files_in_group = 4  ## innodb 事务日志的文件个数
+
+#table config
+table_open_cache = 2000  ## 最大打开的表缓存数量
+#table_cache_instances = 16  ## 自定义，表示每张表最大打开的缓存实例数量 ( mysql8 特性 )
+lower_case_table_names = 1  ## 不严格区分表名大小写
+
+#innodb config
+innodb_flush_log_at_trx_commit = 1  ## 每个事务提交后立即刷新到磁盘 ( 修改为 2 可以实现不立即刷新到磁盘可以减小磁盘 io 压力 )
+innodb_buffer_pool_size = 4G  ## 设置为可用内存的 70%
+innodb_buffer_pool_instances = 16  ## 一般设置为 cpu 核心数的 2 倍 ( 将 innodb 缓冲池分成多个实例，每个实例可以由不同的线程共享，提高性能 )
+innodb_file_per_table = 1  ## 为每个表配置独立表空间文件 ( 不使用共享表空间 ibdata1 )
+innodb_flush_method = O_DIRECT
+innodb_io_capacity = 50000  ## 每秒最大 io 数 ( 可动态突破 )
+innodb_io_capacity_max = 55000  ## 每秒最大 io 数上限
+innodb_print_all_deadlocks = 1
+innodb_write_io_threads = 16  ## 处理写请求的 io 线程数量，根据 cpu 性能适当调整
+innodb_read_io_threads = 8  ## 读取数据页时使用的 io 线程数量
+innodb_online_alter_log_max_size = 1G
+innodb_open_files = 4096  ## innodb 同时可以打开表的最大数量
+default_authentication_plugin = mysql_native_password  ## 默认用户密码验证插件
+
+#replcation config
+master_info_repository = TABLE  ## 将主从信息记录到表中
+relay_log_info_repository = TABLE  ## 将中继日志写入到表中
+sync_binlog = 1  ## 在事务提交后立即将二进制日志写到磁盘
+gtid_mode = on
+enforce_gtid_consistency = 1  ## gtid 强一致性校验
+relay_log = relay.log
+relay_log_recovery = 1
+log-slave-updates = 1  ## 同步更新主库的二进制日志
+
+#replcation mysql8.0
+# binlog_transaction_dependency_tracking = WRITESET
+# transaction_write_set_extraction = XXHASH64
+# slave-parallel-type = LOGICAL_CLOCK
+# slave-parallel-workers = 8
+# slave_preserve_commit_order = 1
+# slave_transaction_retries = 128
+# binlog_gtid_simple_recovery = 1
+# log_timestamps = system
+
+#sem sync replication settings
+#plugin-load = "group_replication.so;mysql_clone.so"  ## 启用组复制插件和克隆插件 ( mysql8 )
+# loose_rpl_semi_sync_master_enabled = 1
+# loose_rpl_semi_sync_master_timeout = 10000
+# loose_rpl_semi_sync_slave_enabled = 1
