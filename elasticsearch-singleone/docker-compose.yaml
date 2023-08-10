@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2-amd64
+    restart: always
+    environment:
+      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+    ulimits:
+      memlock: -1
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: "4"
+    #       memory: 7G
+    network_mode: host
+    # ports:
+    #   # es http 标准端口
+    #   - 9200:9200
+    #   # es 集群通信端口
+    #   - 9300:9300
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./elasticsearch/data:/usr/share/elasticsearch/data
+      - ./elasticsearch/logs:/usr/share/elasticsearch/logs
+      - ./elasticsearch/repo:/usr/share/elasticsearch/repo
+      - ./elasticsearch/plugins:/usr/share/elasticsearch/plugins

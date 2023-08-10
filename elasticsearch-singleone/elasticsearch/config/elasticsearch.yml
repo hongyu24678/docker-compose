@@ -1,0 +1,22 @@
+cluster.name: es-cluster-01
+node.name: node-01
+# 节点角色
+node.roles: [data, master]
+path.data: /usr/share/elasticsearch/data
+path.logs: /usr/share/elasticsearch/logs
+# 快照存储路径
+path.repo: /usr/share/elasticsearch/repo
+# 启动时不检查 memlock 限制
+bootstrap.memory_lock: false
+network.host: 0.0.0.0
+http.port: 9200
+# 集群节点列表，配置为节点地址
+discovery.seed_hosts: ["10.170.0.3"]
+# 引导节点名称，配置为节点名称 ( 可以有多个 )
+cluster.initial_master_nodes: ["node-01"]
+http.cors.enabled: true
+http.cors.allow-origin: "*"
+# 开启用户认证功能
+# xpack.security.enabled: true
+# xpack.license.self_generated.type: basic
+# xpack.security.transport.ssl.enabled: true
