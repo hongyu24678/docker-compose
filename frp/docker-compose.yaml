@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  frps:
+    image: snowdreamtech/frps:0.48.0
+    restart: always
+    network_mode: host
+    volumes:
+      - ./frps.ini:/etc/frp/frps.ini:ro
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+  # frpc:
+  #   image: snowdreamtech/frpc:0.48.0
+  #   restart: always
+  #   network_mode: host
+  #   volumes:
+  #     - ./frpc.ini:/etc/frp/frpc.ini:ro
+  #     - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
