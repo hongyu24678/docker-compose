@@ -1,0 +1,9 @@
+# vscode 文件
+*.code-workspace
+.vscode
+
+# 测试文件
+*test*
+
+# 忽略 demo 文件
+*demo*
