@@ -1,0 +1,14 @@
+---
+version: '3.8'
+services:
+  haproxy:
+    # build: .
+    # image: haproxy:2.5-edit_config_compose
+    image: docker.io/noi1031/haproxy:2.5-alpine
+    restart: always
+    volumes:
+      - ./haproxy.cfg:/etc/haproxy/haproxy.cfg:ro
+    network_mode: host
+    ulimits: 
+      nofile: 655360
+...
