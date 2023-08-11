@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  cadvisor:
+    # image: noi1031/cadvisor:v0.45.0
+    image: noi1031/cadvisor:v0.47.1
+    # image: gcr.io/cadvisor/cadvisor:v0.47.1  ## 谷歌镜像仓库地址
+    restart: always
+    privileged: true
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 200M
+    ports:
+      - 8180:8080
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      # - /data/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
