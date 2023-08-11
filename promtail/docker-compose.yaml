@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  promtail:
+    image: grafana/promtail:2.8.2
+    command: 
+      - "-config.file=/etc/promtail/promtail.yaml"
+    restart: always
+    network_mode: host
+    # ports:
+    #   - 9080:9080
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+      - ./tmp:/tmp
+      - ./promtail.yaml:/etc/promtail/promtail.yaml
+      - ./targets:/etc/promtail/targets
+      - /var/log:/var/log
