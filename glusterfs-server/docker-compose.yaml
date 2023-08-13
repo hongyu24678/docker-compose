@@ -1,0 +1,35 @@
+---
+version: '3.8'
+services:
+  glusterfs-server:
+    image: noi1031/glusterfs-server:10.3-debian
+    restart: always
+    network_mode: host
+    # 因为要对 brick 分区设置特性，所以必须开启特权模式
+    privileged: true
+    volumes:
+      - /data/:/data:rw
+      - ./glusterd/:/var/lib/glusterd
+      - /etc/localtime:/etc/localtime:ro
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+...
+
+# docker run 命令
+#####
+# docker run -d \
+#   --restart=always \
+#   --network=host \
+#   --privileged=true \
+#   --ulimit=memlock=-1:-1 \
+#   --name=glusterfs-server \
+#   -v /data/:/data:rw \
+#   -v $(pwd)/glusterd/:/var/lib/glusterd \
+#   -v /etc/localtime:/etc/localtime:ro \
+#   noi1031/glusterfs-server:10.3-debian
+#####
+# /data 目录是在宿主机中存储 brick 的目录
+#
+# $(pwd)/glusterd 目录是 glusterfs 的数据目录
