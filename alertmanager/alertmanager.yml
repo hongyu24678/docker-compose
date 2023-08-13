@@ -1,0 +1,75 @@
+global:
+  # 故障恢复后指定时间内没有再出现相同故障则判定为恢复
+  resolve_timeout: 0m
+  # 全局 SMTP 连接配置
+  smtp_smarthost: 'smtp.163.com:465'
+  smtp_from: 'xxxxxxx@163.com'
+  smtp_auth_username: 'xxxxxxx@163.com'
+  smtp_auth_identity: 'xxxxxxx@163.com'
+  smtp_auth_password: 'xxxxxxxx'
+  smtp_require_tls: false
+
+route:
+  # 告警分组, 通过指定的标签将告警分组，即标签值相同的告警分为一组内（多个标签使用空格分隔 ['label1',label2....]，指定多个标签后告警信息必须中的指定标签都相同才分类为一组，否则不分为一组）
+  group_by: ['alertname']  ## alertname 即在 prometheus rule 中告警规则的 alert 字段值，发生告警时 ( Firing ) 会在告警 json 中自动转换为 alertname
+  # 在组内等待指定时间，如果同组内，指定时间内出现相同告警，则在一条信息中发送。
+  group_wait: 10s
+  # 等待指定时间该组才能发送新的告警（多条告警发送间隔）
+  group_interval: 10s
+  # 如果告警问题未恢复则间隔指定时间后再次发送告警信息
+  repeat_interval: 1h
+  # 默认的接收者 ( 当告警与子路由都不匹配时则会将消息发送给名为 default 的接收者 )
+  receiver: 'default'
+  # 子路由
+  routes:
+    # 一个子路由规则 ( match_re:可以使用正则匹配规则，match:使用绝对匹配规则 ), 子路由匹配可以有多个，如果告警产生， Firing 的数据与子路由都不匹配将使用默认路由
+    # 根据告警中的 severity 标签内容进匹配，如果标签内容匹配 'warning|info' 正则，则将告警发送给该路由指定的接收者
+    # 主要根据 rule 规则中的标签而配置
+    - match_re:
+        severity: "warning|critical"
+      # Firing 被该规则匹配后将告警信息发送至下面定义的接收者
+      receiver: "email-1"
+
+templates:
+  - "/templates/*.tmpl"
+  - "/templates/*.html"
+
+receivers:
+  # 定义一个接收者, 接收者名为 default, 用于在告警路由配置中调用
+  - name: 'default'
+    # 该接收者使用 emali 发送和接收告警信息
+    email_configs:
+      # 接收告警信息的 email 地址, 多个邮箱使用逗号分隔 ( 写在一个引号內部 )
+      - to: "noise7723@163.com"
+        # 是否接收告警恢复的消息
+        send_resolved: true
+        # 定义邮件使用的标题模板
+        headers:
+          subject: '{{ template "email.default.subject" }}'
+        # 定义邮件内容使用的模板
+        html: '{{ template "email.default.html" . }}'
+        # 自定义的 smtp 配置，会覆盖全局配置，但仅在当前路由生效
+        # from: 'test@163.com'
+        # smarthost: 'smtp.163.com:465'
+        # auth_username: 'test@163.com'
+        # auth_identity: 'test@163.com'
+        # auth_password: 'xxxxxxxxxxxx'
+        # require_tls: false
+  # 定义一个接收者 email-1
+  - name: "email-1"
+    email_configs:
+      - to: "noise7723@163.com"
+        send_resolved: true
+        html: '{{ template "email.default.html" . }}'
+  - name: 'web.hook'
+    webhook_configs:
+      - url: 'http://127.0.0.1:5001/'
+
+# 告警抑制规则
+inhibit_rules:
+  # 一条告警抑制规则
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'instance']

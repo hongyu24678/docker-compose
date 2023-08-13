@@ -1,0 +1,21 @@
+---
+version: '3.8'
+services:
+  alertmanager:
+    image: prom/alertmanager:v0.25.0
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+    network_mode: host
+    # ports:
+    #   # 9093 为 alertmanager 常规 http 端口
+    #   - 9093:9093
+    #   # 9094 为 alertmanager 集群监听端口
+    #   - 9094:9094
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - ./alertmanager:/alertmanager
+      - ./templates:/templates:ro
