@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  node-exporter:
+    image: prom/node-exporter:v1.5.0
+    # image: quay.io/prometheus/node-exporter:v1.5.0  ## quay.io 仓库中也有 prometheus 的镜像
+    restart: always
+    command: 
+      - "--web.listen-address=0.0.0.0:9100"
+      - "--path.sysfs=/host/sys"
+      - "--path.rootfs=/host/root"
+      - "--path.udev.data=/host/root/run/udev/data"
+      - "--no-collector.wifi"
+      - "--no-collector.hwmon"
+      - >-
+        --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|run/k3s/containerd/.+|var/lib/docker/.+|var/lib/kubelet/pods/.+)($$|/)
+      - "--collector.netclass.ignored-devices=^(veth.*|[a-f0-9]{15})$$"
+      - "--collector.netdev.device-exclude=^(veth.*|[a-f0-9]{15})$$"  ## compose 中的 $ 需要两个 $$ 
+    privileged: true
+    # 不使用 host 网络模式需要将容器的主机名设置为宿主机的主机名，否则会将其识别为容器内的主机名
+    network_mode: host
+    pid: host
+    # ports:
+    #   - 9100:9100
+    volumes:
+      - /:/host/root:ro
+      - /sys:/host/sys:ro
