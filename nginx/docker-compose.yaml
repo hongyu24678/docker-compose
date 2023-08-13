@@ -1,0 +1,18 @@
+---
+version: "3.8"
+services:
+  nginx:
+    image: docker.io/noi1031/nginx:1.22.1-debian
+    restart: always
+    network_mode: host
+    # ports:
+    #   - 80:80
+    #   - 443:443
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./conf.d:/etc/nginx/conf.d
+      - ./stream:/etc/nginx/stream
+      - ./certs:/etc/nginx/certs:ro
+      - ./www:/www
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+...

@@ -1,0 +1,45 @@
+upstream api {
+    server 172.5.1.90:9000 max_fails=1 fail_timeout=60s;
+    server 172.5.1.92:9000 max_fails=1 fail_timeout=60s;
+    server 172.5.1.94:9000 max_fails=1 fail_timeout=60s;
+    server 172.5.1.95:9000 max_fails=1 fail_timeout=60s;
+}
+
+upstream console {
+    server 172.5.1.90:9001 max_fails=1 fail_timeout=60s;
+    server 172.5.1.92:9001 max_fails=1 fail_timeout=60s;
+    server 172.5.1.94:9001 max_fails=1 fail_timeout=60s;
+    server 172.5.1.95:9001 max_fails=1 fail_timeout=60s;
+}
+
+server {
+    listen 9200;
+    server_name _;
+
+    client_max_body_size 2048m;
+
+    proxy_connect_timeout 2s;
+    proxy_next_upstream error timeout invalid_header;
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    location / {
+        proxy_pass http://api;
+    }
+}
+
+server {
+    listen 9201;
+    server_name _;
+
+    client_max_body_size 2048m;
+
+    proxy_connect_timeout 2s;
+    proxy_next_upstream error timeout invalid_header;
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    location / {
+        proxy_pass http://console;
+    }
+}
