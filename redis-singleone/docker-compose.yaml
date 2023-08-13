@@ -1,0 +1,21 @@
+---
+version: '3.8'
+services:
+  redis:
+    image: docker.io/library/redis:6.2.10
+    command: 
+      - "/usr/local/etc/redis/redis.conf"
+      - "--port 6379"
+    restart: always
+    # ports:
+    #   - 6379:6379
+    #   # 集群模式需要开放端口
+    #   - 16379:16379
+    #   # 哨兵模式需要开放端口
+    #   - 26379:26379
+    network_mode: host
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - ./data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+...
