@@ -1,0 +1,14 @@
+---
+version: '3.8'
+services:
+  blackbox:
+    image: docker.io/prom/blackbox-exporter:v0.21.1
+    command: 
+      - "--config.file=/config/blackbox.yml"
+    restart: always
+    volumes:
+      - ./config:/config:ro
+    network_mode: host
+    # ports:
+    #   - 9115:9115
+...
