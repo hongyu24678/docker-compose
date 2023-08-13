@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:6.2.10
+    command: 
+      - "/usr/local/etc/redis/redis/redis.conf"
+      - "--port 6379"
+    restart: always
+    network_mode: host
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime
+      - ./redis-data:/data
+      # 不能单挂配置文件，因为哨兵会修改文件，单挂文件会变成只读，哨兵无法修改
+      - ./redis:/usr/local/etc/redis/redis
+  sentinel:
+    image: redis:6.2.10
+    command: 
+      - "redis-sentinel"
+      - "/usr/local/etc/redis/sentinel/sentinel.conf"
+    restart: always
+    network_mode: host
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime
+      # - ./sentinel-data:/data
+      # 不能单挂配置文件，与 redis 同理
+      - ./sentinel:/usr/local/etc/redis/sentinel
