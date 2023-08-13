@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  grafana:
+    image: grafana/grafana:9.5.1
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: "3"
+          memory: 300M
+    # 使用 host 模式方便使用 127.0.0.1 连接主机的其他服务
+    network_mode: host
+    volumes:
+      - ./grafana:/var/lib/grafana/
+      - ./defaults.ini:/usr/share/grafana/conf/defaults.ini:ro
+    # ports:
+    #   - 3000:3000
