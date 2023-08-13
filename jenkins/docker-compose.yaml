@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  jenkins:
+    image: jenkins/jenkins:2.401.2-lts-jdk11
+    restart: always
+    ports:
+      - 8080:8080
+      # - 50000:50000
+    environment:
+      # 设置 java 启动参数 ( 多个参数也不能使用双引号 )
+      - JAVA_OPTS=-server -Xms1024m -Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=512m
+      # 指定 jenkins 前缀地址，没有需求可以忽略
+      # - JENKINS_OPTS=--prefix=/jenkins
+      # - JENKINS_ARGS=--prefix=/jenkins
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+      - ./jenkins/jenkins_home:/var/jenkins_home
