@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.50.0
+    restart: always
+    environment:
+      REDIS_ADDR: 127.0.0.1
+      REDIS_USER: default
+      REDIS_PASSWORD: redis.123
+    network_mode: host
+    # ports:
+    #   - 9121:9121
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
