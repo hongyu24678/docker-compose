@@ -1,0 +1,4 @@
+# 配置 basic 基本 web 认证 ( htpasswd -nB admin, 此处的密码为 X2j6bCS0t33Lo78 )
+# htpasswd 工具在 debian 系列中的软件包为 apache2-utils
+basic_auth_users:
+  admin: $2y$05$frPSCj2oc7L02wMvXkejwuJieU75Bn.PALAhUxI8oXxlU46oihtB6

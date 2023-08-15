@@ -1,0 +1,171 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+
+# remote_write:
+#   - url: "http://influxdb:8086/api/v1/prom/write?db=prometheus&u=influxdb&p=influxdb.123"
+
+# remote_read:
+#   - url: "http://influxdb:8086/api/v1/prom/read?db=prometheus&u=influxdb&p=influxdb.123"
+
+alerting:
+  alertmanagers:
+    - timeout: "10s"
+      api_version: v2
+      path_prefix: /
+      scheme: http
+      follow_redirects: true
+      static_configs:
+        - targets:
+          - "localhost:9093"
+
+rule_files:
+  - "/etc/prometheus/rules/*.yaml"
+
+scrape_configs:
+  ## 监控 prometheus 
+  - job_name: "prometheus"
+    metrics_path: /metrics  ## 获取 metrics 的路径 ( 默认值 )
+    scheme: http  ## 获取 metrics 的协议 ( 默认值 )
+    static_configs:
+      - targets:
+        - localhost:9090
+    ## 丢弃 go_ 开头的指标 ( 不将 go_ 开头的指标存储到时序数据库中 )
+    metric_relabel_configs:
+      - source_labels:
+        - __name__
+        regex: "go_.*"
+        action: drop
+    ## prometheus 配置 basic 认证之后拉取自己的指标配置中需要配置认证信息，否则无法拉取
+    basic_auth:
+      username: admin
+      password: "X2j6bCS0t33Lo78"
+  ## 监控 alertmanager
+  - job_name: "alertmanager"
+    static_configs:
+      - targets:
+        - "localhost:9093"
+    metric_relabel_configs:
+      - source_labels:
+        - __name__
+        regex: "go_.*"
+        action: drop
+  ## 监控 node-exporter
+  - job_name: "node"
+    metrics_path: /metrics  ## 默认值
+    scheme: http  ## 默认值
+    ## 基于文件的自动发现 ( 在文件中以静态配置格式配置要监控的 target 即可 )
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/file_sd/node.yaml
+    ## target 标签重写
+    relabel_configs:
+      ## 将 target ip 地址重写到 instance 标签 ( 去除端口号 )
+      # - action: replace
+      #   source_labels: [ __address__ ]
+      #   target_label: instance
+      #   regex: (.*):(.*)
+      #   replacement: $1
+      ## 将 hostname 标签值重写到 instance 标签 ( 如果源标签不存在则不会重写 )
+      ## 当源标签有多个时，如果其中有不存在的标签则会使用空代替 ( 分隔符依旧会有 )，如果多个源标签
+      ## 均不存在则不会进行标签重写
+      - action: replace  ## 默认动作 ( 重写标签值 )
+        source_labels:  ## 源标签列表
+          - "hostname"
+        target_label: instance  ## 目标标签
+        regex: (.*)  ## 正则匹配源标签的值，默认参数
+        replacement: $1  ## 重写值，默认参数
+    metric_relabel_configs:
+      - source_labels:
+        - __name__
+        regex: "go_.*"
+        action: drop
+  ## 监控 mysqld-exporter
+  - job_name: "mysql"
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/file_sd/mysql.yaml
+    relabel_configs:
+      # - action: replace
+      #   source_labels: [ __address__ ]
+      #   target_label: instance
+      #   regex: (.*):(.*)
+      #   replacement: $1
+      - action: replace
+        source_labels:
+          - "hostname"
+        target_label: instance
+        regex: (.*)
+        replacement: $1
+    metric_relabel_configs:
+      - source_labels:
+        - __name__
+        regex: "go_.*"
+        action: drop
+  ## 监控 cadvisor
+  - job_name: "cadvisor"
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/file_sd/cadvisor.yaml
+    relabel_configs:
+      # - action: replace
+      #   source_labels: [ __address__ ]
+      #   target_label: instance
+      #   regex: (.*):(.*)
+      #   replacement: $1
+      - action: replace
+        source_labels:
+          - "hostname"
+        target_label: instance
+        regex: (.*)
+        replacement: $1
+    metric_relabel_configs:
+      - source_labels:
+        - __name__
+        regex: "go_.*"
+        action: drop
+  # 监控 loki 实例
+  - job_name: "loki"
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/file_sd/loki.yaml
+    relabel_configs:
+      # - action: replace
+      #   source_labels: [ __address__ ]
+      #   target_label: instance
+      #   regex: (.*):(.*)
+      #   replacement: $1
+      - action: replace
+        source_labels:
+          - "hostname"
+        target_label: instance
+        regex: (.*)
+        replacement: $1
+    metric_relabel_configs:
+      - source_labels:
+        - __name__
+        regex: "go_.*"
+        action: drop
+  # 监控 promtail 实例
+  - job_name: "promtail"
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/file_sd/promtail.yaml
+    relabel_configs:
+      # - action: replace
+      #   source_labels: [ __address__ ]
+      #   target_label: instance
+      #   regex: (.*):(.*)
+      #   replacement: $1
+      - action: replace
+        source_labels:
+          - "hostname"
+        target_label: instance
+        regex: (.*)
+        replacement: $1
+    metric_relabel_configs:
+      - source_labels:
+        - __name__
+        regex: "go_.*"
+        action: drop

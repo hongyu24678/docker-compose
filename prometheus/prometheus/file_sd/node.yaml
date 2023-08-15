@@ -1,0 +1,17 @@
+# - targets:
+#   - 172.5.1.75:9100
+#   - 172.5.1.51:9100
+#   labels:
+#     hostname: instance-9
+#     zone: yuenan
+
+# - targets:
+#   - 10.170.0.3:9100
+#   labels:
+#     hostname: instance-11
+#     zone: yuenan
+# - targets:
+#   - 10.170.0.2:9100
+#   labels:
+#     hostname: instance-10
+#     zone: yuenan

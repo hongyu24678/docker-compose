@@ -1,0 +1,16 @@
+# - targets:
+#   - 172.5.1.75:3100
+#   - 172.5.1.51:3100
+#   labels:
+#     zone: yuenan
+
+# - targets:
+#   - 10.170.0.3:3100
+#   labels:
+#     hostname: instance-11
+#     zone: yuenan
+# - targets:
+#   - 10.170.0.2:3100
+#   labels:
+#     hostname: instance-10
+#     zone: yuenan
