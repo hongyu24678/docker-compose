@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  openvpn:
+    image: noi1031/openvpn:2.6.2-debian11
+    restart: always
+    # 作为客户端启动 ( 默认作为服务端启动 )
+    # command:
+    #   - openvpn
+    #   - /etc/openvpn/client/client.ovpn
+    privileged: true
+    network_mode: host
+    volumes:
+      - ./openvpn:/etc/openvpn:rw
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
